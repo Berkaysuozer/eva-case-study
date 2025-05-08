@@ -1,0 +1,91 @@
+{
+  "hash": "c1a41f76",
+  "configHash": "fad084e1",
+  "lockfileHash": "6989ac32",
+  "browserHash": "b1a3a2d7",
+  "optimized": {
+    "vue": {
+      "src": "../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "ae39a29f",
+      "needsInterop": false
+    },
+    "vue-router": {
+      "src": "../../node_modules/vue-router/dist/vue-router.mjs",
+      "file": "vue-router.js",
+      "fileHash": "ed77d43a",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "85a37493",
+      "needsInterop": false
+    },
+    "highcharts": {
+      "src": "../../node_modules/highcharts/highcharts.js",
+      "file": "highcharts.js",
+      "fileHash": "d4367182",
+      "needsInterop": true
+    },
+    "highcharts-vue": {
+      "src": "../../node_modules/highcharts-vue/dist/highcharts-vue.min.js",
+      "file": "highcharts-vue.js",
+      "fileHash": "e96e105c",
+      "needsInterop": true
+    },
+    "highcharts/highcharts-more": {
+      "src": "../../node_modules/highcharts/highcharts-more.js",
+      "file": "highcharts_highcharts-more.js",
+      "fileHash": "c7a0d64f",
+      "needsInterop": true
+    },
+    "highcharts/modules/exporting": {
+      "src": "../../node_modules/highcharts/modules/exporting.js",
+      "file": "highcharts_modules_exporting.js",
+      "fileHash": "4139ab09",
+      "needsInterop": true
+    },
+    "highcharts/modules/export-data": {
+      "src": "../../node_modules/highcharts/modules/export-data.js",
+      "file": "highcharts_modules_export-data.js",
+      "fileHash": "42ea2b97",
+      "needsInterop": true
+    },
+    "highcharts/modules/accessibility": {
+      "src": "../../node_modules/highcharts/modules/accessibility.js",
+      "file": "highcharts_modules_accessibility.js",
+      "fileHash": "996a3c90",
+      "needsInterop": true
+    },
+    "vuex": {
+      "src": "../../node_modules/vuex/dist/vuex.esm-bundler.js",
+      "file": "vuex.js",
+      "fileHash": "edd91f01",
+      "needsInterop": false
+    },
+    "vuex-persist": {
+      "src": "../../node_modules/vuex-persist/dist/esm/index.js",
+      "file": "vuex-persist.js",
+      "fileHash": "d0333842",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-BCO7UM6H": {
+      "file": "chunk-BCO7UM6H.js"
+    },
+    "chunk-AYVSL3LM": {
+      "file": "chunk-AYVSL3LM.js"
+    },
+    "chunk-64FPT2L5": {
+      "file": "chunk-64FPT2L5.js"
+    },
+    "chunk-YYKLYGSW": {
+      "file": "chunk-YYKLYGSW.js"
+    },
+    "chunk-V4OQ3NZ2": {
+      "file": "chunk-V4OQ3NZ2.js"
+    }
+  }
+}
