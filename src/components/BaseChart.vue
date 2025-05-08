@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import Highcharts from 'highcharts';
+import HighchartsVue from 'highcharts-vue';
 
 interface ChartData {
   dates: string[];
@@ -15,12 +16,14 @@ interface Props {
   isLoading?: boolean;
   error?: string | null;
   selectedDates?: string[];
+  chartOptions?: any;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   error: null,
-  selectedDates: () => []
+  selectedDates: () => [],
+  chartOptions: () => ({})
 });
 const emit = defineEmits<{
   (e: 'pointClick', date: string): void;
@@ -29,16 +32,10 @@ const emit = defineEmits<{
 }>();
 
 const chartRef = ref<HTMLElement | null>(null);
-let chart: Highcharts.Chart | null = null;
+const chart = ref<Highcharts.Chart | null>(null);
 
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const dayName = days[date.getDay()];
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${dayName}, ${day}-${month}-${year}`;
+const formatDate = (date: string | number): string => {
+  return typeof date === 'string' ? date : date.toString();
 };
 
 const formatTooltip = function(this: any) {
@@ -75,20 +72,17 @@ const formatTooltip = function(this: any) {
 };
 
 const handlePointClick = (date: string) => {
-  if (!chart) return;
+  if (!chart.value) return;
   
   const existingIndex = props.selectedDates.indexOf(date);
   
   if (existingIndex !== -1) {
-    // If date is already selected, remove it
-    chart.xAxis[0].removePlotBand('selected-band-' + date);
+    chart.value.xAxis[0].removePlotBand('selected-band-' + date);
     emit('pointClick', date);
   } else {
-    // If trying to add a new date
     if (props.selectedDates.length >= 2) {
-      // Remove the first selected date's plot band
       const firstDate = props.selectedDates[0];
-      chart.xAxis[0].removePlotBand('selected-band-' + firstDate);
+      chart.value.xAxis[0].removePlotBand('selected-band-' + firstDate);
     }
     emit('pointClick', date);
   }
@@ -97,7 +91,7 @@ const handlePointClick = (date: string) => {
 const initChart = () => {
   if (!chartRef.value) return;
 
-  chart = Highcharts.chart(chartRef.value, {
+  const options = {
     chart: {
       type: 'column',
       backgroundColor: '#ffffff',
@@ -110,8 +104,8 @@ const initChart = () => {
           const x = xAxis.toValue(e.chartX);
           const categories = xAxis.categories;
           const index = Math.floor(x + 0.5);
-
-          if (index >= 0 && index < categories.length) {
+          
+          if (categories && index >= 0 && index < categories.length) {
             handlePointClick(categories[index]);
           }
         }
@@ -143,7 +137,8 @@ const initChart = () => {
         }
       },
       lineColor: '#e5e7eb',
-      tickColor: '#e5e7eb'
+      tickColor: '#e5e7eb',
+      crosshair: true
     },
     yAxis: {
       title: {
@@ -164,6 +159,7 @@ const initChart = () => {
     plotOptions: {
       series: {
         cursor: 'pointer',
+        stacking: 'normal',
         point: {
           events: {
             click: function() {
@@ -174,28 +170,31 @@ const initChart = () => {
               handlePointClick(this.category);
             },
             mouseOver: function() {
-              if (!chart) return;
-              chart.xAxis[0].removePlotBand('hover-band');
-              chart.xAxis[0].addPlotBand({
+              if (!chart.value) return;
+              
+              chart.value.xAxis[0].removePlotBand('hover-band');
+              
+              chart.value.xAxis[0].addPlotBand({
                 from: this.index - 0.5,
                 to: this.index + 0.5,
-                color: 'rgba(255, 200, 100, 0.3)',
+                color: 'rgba(255, 200, 100, 0.2)',
                 id: 'hover-band',
                 zIndex: -1
               });
             },
             mouseOut: function() {
-              if (!chart) return;
-              chart.xAxis[0].removePlotBand('hover-band');
+              if (!chart.value) return;
+              
+              if (!props.selectedDates.includes(this.category)) {
+                chart.value.xAxis[0].removePlotBand('hover-band');
+              }
             }
           }
         }
       },
       column: {
-        color: '#3b82f6',
         borderWidth: 0,
-        stacking: 'normal',
-        cursor: 'pointer'
+        pointPadding: 0.2
       }
     },
     legend: {
@@ -234,25 +233,26 @@ const initChart = () => {
         data: props.data.fbmAmount,
         color: '#5930E4'
       }
-    ]
-  });
+    ],
+    ...props.chartOptions
+  };
 
-  emit('chartReady', chart);
+  chart.value = Highcharts.chart(chartRef.value, options);
+  emit('chartReady', chart.value);
 };
 
 const updatePlotBands = () => {
-  if (!chart) return;
+  if (!chart.value) return;
   
-  chart.xAxis[0].removePlotBand('hover-band');
+  chart.value.xAxis[0].removePlotBand('hover-band');
   props.selectedDates.forEach(date => {
-    chart.xAxis[0].removePlotBand('selected-band-' + date);
+    chart.value.xAxis[0].removePlotBand('selected-band-' + date);
   });
 
-  const lastTwoDates = props.selectedDates.slice(-2);
-  lastTwoDates.forEach(date => {
+  props.selectedDates.forEach(date => {
     const index = props.data.dates.indexOf(date);
     if (index !== -1) {
-      chart.xAxis[0].addPlotBand({
+      chart.value.xAxis[0].addPlotBand({
         from: index - 0.5,
         to: index + 0.5,
         color: 'rgba(255, 200, 100, 0.3)',
@@ -264,16 +264,12 @@ const updatePlotBands = () => {
 };
 
 watch(() => props.selectedDates, (newDates) => {
-  if (newDates.length > 2) {
-    const lastTwoDates = newDates.slice(-2);
-    emit('update:selectedDates', lastTwoDates);
-  }
   updatePlotBands();
 }, { deep: true });
 
 watch(() => props.data, (newData) => {
-  if (chart) {
-    chart.update({
+  if (chart.value) {
+    chart.value.update({
       xAxis: {
         categories: newData.dates
       },
@@ -307,9 +303,9 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  if (chart) {
-    chart.destroy();
-    chart = null;
+  if (chart.value) {
+    chart.value.destroy();
+    chart.value = null;
   }
 });
 </script>

@@ -3,6 +3,8 @@ import { ref, computed, watch } from 'vue';
 import { store } from '../store';
 import BaseChart from './BaseChart.vue';
 import Table from './Table.vue';
+import { defineComponent, onMounted } from 'vue';
+import { salesAnalyticsService } from '../services/salesAnalytics.service';
 
 type DayOption = 60 | 30 | 14 | 7;
 const selectedDay = computed({
@@ -17,10 +19,8 @@ const dailySalesData = computed(() => store.getters['salesAnalytics/dailySalesDa
 const selectedDates = ref<string[]>([]);
 
 const handlePointClick = async (date: string) => {
-  const existingIndex = selectedDates.value.indexOf(date);
-  
-  if (existingIndex !== -1) {
-    selectedDates.value.splice(existingIndex, 1);
+  if (selectedDates.value.includes(date)) {
+    selectedDates.value = selectedDates.value.filter(d => d !== date);
   } else {
     if (selectedDates.value.length >= 2) {
       selectedDates.value.shift();
@@ -101,7 +101,13 @@ const fetchData = async () => {
   }
 };
 
-fetchData();
+onMounted(() => {
+  fetchData();
+});
+
+watch(selectedDates, (newDates) => {
+  store.dispatch('salesAnalytics/setSelectedDates', newDates);
+});
 </script>
 
 <template>

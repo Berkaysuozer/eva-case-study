@@ -13,13 +13,23 @@ const emit = defineEmits<{
   (e: 'login', credentials: LoginCredentials): void;
 }>();
 
-const credentials = ref<LoginCredentials>({
-  Email: '',
-  Password: ''
+const credentials = ref({
+  email: '',
+  password: ''
 });
 
-const handleSubmit = () => {
-  emit('login', credentials.value);
+const handleSubmit = async () => {
+  try {
+    props.isLoading = true;
+    await emit('login', {
+      Email: credentials.value.email,
+      Password: credentials.value.password
+    });
+  } catch (error) {
+    console.error('Login failed:', error);
+  } finally {
+    props.isLoading = false;
+  }
 };
 
 const emailIcon = `<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -48,7 +58,7 @@ const passwordIcon = `<path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 0
         type="email"
         label="Email address"
         placeholder="you@example.com"
-        v-model="credentials.Email"
+        v-model="credentials.email"
         :icon="emailIcon"
       />
       
@@ -57,7 +67,7 @@ const passwordIcon = `<path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 0
         type="password"
         label="Password"
         placeholder="••••••••"
-        v-model="credentials.Password"
+        v-model="credentials.password"
         :icon="passwordIcon"
       />
 

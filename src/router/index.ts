@@ -19,15 +19,18 @@ const router = createRouter({
   ]
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   const isAuthenticated = store.getters['oauth/isAuthenticated'];
+  
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login');
-  } else if (to.path === '/login' && isAuthenticated) {
-    next('/');
-  } else {
-    next();
+    return { path: '/login' };
   }
+  
+  if (to.path === '/login' && isAuthenticated) {
+    return { path: '/' };
+  }
+  
+  return true;
 });
 
 export default router; 

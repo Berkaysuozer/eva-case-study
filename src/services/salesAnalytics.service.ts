@@ -32,11 +32,20 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+interface DailySalesParams {
+  customDateData: null;
+  day: 7 | 14 | 30 | 60;
+  excludeYoYData: boolean;
+  marketplace: string;
+  requestStatus: number;
+  sellerId: string;
+}
+
 class SalesAnalyticsService {
   async getDailySalesOverview(params: DailySalesOverviewParams): Promise<ApiResponse<any>> {
     try {
-      const payload = {
-        customDateData: params.customDateData ?? null,
+      const payload: DailySalesParams = {
+        customDateData: null,
         day: params.day,
         excludeYoYData: params.excludeYoYData ?? true,
         marketplace: params.marketplace,
