@@ -48,7 +48,7 @@ const formatTooltip = function(this: any) {
     }
   });
 
-  const currentDate = this.category;
+  const currentDate = this.x;
   const currentData = props.data.dates.findIndex(date => date === currentDate);
   const shipping = currentData !== -1 ? props.data.fbaShippingAmount[currentData] : 0;
 

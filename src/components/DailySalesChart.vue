@@ -105,9 +105,6 @@ onMounted(() => {
   fetchData();
 });
 
-watch(selectedDates, (newDates) => {
-  store.dispatch('salesAnalytics/setSelectedDates', newDates);
-});
 </script>
 
 <template>
