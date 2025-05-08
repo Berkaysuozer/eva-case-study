@@ -43,7 +43,7 @@ src/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/eva-case.git
+git clone https://github.com/Berkaysuozer/eva-case-study
 cd eva-case
 ```
 
@@ -52,3 +52,8 @@ cd eva-case
 npm install
 ```
 
+3. Run Project
+
+```bash
+npm run dev
+```
